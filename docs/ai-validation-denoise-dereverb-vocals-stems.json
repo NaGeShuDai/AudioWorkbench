@@ -1,0 +1,38 @@
+[
+  {
+    "tool": "denoise",
+    "status": "passed",
+    "tracks": [
+      "处理结果"
+    ],
+    "segments": []
+  },
+  {
+    "tool": "dereverb",
+    "status": "passed",
+    "tracks": [
+      "No Reverb"
+    ],
+    "segments": []
+  },
+  {
+    "tool": "vocals",
+    "status": "passed",
+    "tracks": [
+      "Vocals",
+      "Instrumental"
+    ],
+    "segments": []
+  },
+  {
+    "tool": "stems",
+    "status": "passed",
+    "tracks": [
+      "Bass",
+      "Drums",
+      "Other",
+      "Vocals"
+    ],
+    "segments": []
+  }
+]

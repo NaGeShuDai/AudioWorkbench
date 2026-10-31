@@ -1,0 +1,15 @@
+.venv/
+.engines/
+models/
+bin/
+outputs/
+__pycache__/
+*.pyc
+test-artifacts/
+
+build/
+dist/
+*.spec
+.env
+.env.*
+*.log

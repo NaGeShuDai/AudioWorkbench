@@ -1,0 +1,14 @@
+[
+  {
+    "tool": "transcribe",
+    "status": "passed",
+    "tracks": [],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 4.0,
+        "text": "This is an audio processing test. Clear speech."
+      }
+    ]
+  }
+]
