@@ -317,7 +317,10 @@ class MainWindow(QMainWindow):
     def position_changed(self,pos):
         duration=self.player.duration(); a=self.asset; r=a.result if a and a.result and a.result.tool_id==self.tool_id else None
         offset=r.selection[0] if r and r.selection and not self.playing_full_source else 0
-        self.wave.cursor=(pos/1000+offset)/max(self.wave.duration,.001); self.wave.update(); self.result_wave.cursor=pos/max(duration,1); self.result_wave.update()
+        if self.player_kind=='original':
+            self.wave.cursor=(pos/1000+offset)/max(self.wave.duration,.001); self.wave.update()
+        else:
+            self.result_wave.cursor=pos/max(duration,1); self.result_wave.update()
         def fmt(ms):
             s=int(ms/1000); return f'{s//60:02d}:{s%60:02d}'
         self.time_label.setText(f'{fmt(pos)} / {fmt(duration)}')

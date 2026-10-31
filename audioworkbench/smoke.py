@@ -30,6 +30,12 @@ def run(app,report_path):
             assert destination.exists() and sf.info(destination).frames==96000
             result['export_verified']=True
             w.grab().save(str(Path(report_path).with_suffix('.png')))
+            for tool in ('denoise','spectrum'):
+                w.choose_tool(tool)
+                if tool=='denoise': w.form.controls['engine'].setCurrentIndex(1)
+                w.run_tool(); until(lambda:not w.busy); assert not errors,errors
+                assert w.asset.result.tool_id==tool
+            result['additional_tools']=['spectral denoise','spectrum']
             result['ok']=True
     except Exception: result['error']=traceback.format_exc()
     finally:
