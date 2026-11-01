@@ -1,4 +1,4 @@
-#ifndef AppVersion
+﻿#ifndef AppVersion
   #define AppVersion "1.1.0"
 #endif
 [Setup]
@@ -25,8 +25,18 @@ WizardStyle=modern
 CloseApplications=yes
 RestartApplications=no
 
+[Languages]
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[CustomMessages]
+chinesesimplified.DesktopShortcut=创建桌面快捷方式
+chinesesimplified.LaunchApplication=启动 AudioWorkbench
+english.DesktopShortcut=Create a desktop shortcut
+english.LaunchApplication=Launch AudioWorkbench
+
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:DesktopShortcut}"; Flags: unchecked
 
 [Files]
 Source: "..\dist\AudioWorkbench\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -36,4 +46,4 @@ Name: "{group}\AudioWorkbench"; Filename: "{app}\AudioWorkbench.exe"; WorkingDir
 Name: "{autodesktop}\AudioWorkbench"; Filename: "{app}\AudioWorkbench.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\AudioWorkbench.exe"; Description: "Launch AudioWorkbench"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\AudioWorkbench.exe"; Description: "{cm:LaunchApplication}"; Flags: nowait postinstall skipifsilent

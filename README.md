@@ -147,7 +147,7 @@ tests/                          信号、生命周期、导出及 GUI 检查
 uv pip install --python .venv/Scripts/python.exe pyinstaller==6.22.3 pillow
 .venv/Scripts/python.exe scripts/create_icon.py
 .venv/Scripts/python.exe scripts/build_windows.py
-# 安装 Inno Setup 6+，或设置 ISCC 环境变量后：
+# 安装 Inno Setup 7+，或设置 ISCC 环境变量后：
 .venv/Scripts/python.exe scripts/build_installer.py
 .venv/Scripts/python.exe tests/test_ui_updates.py
 .venv/Scripts/python.exe tests/gui_toolbox.py
