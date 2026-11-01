@@ -2,15 +2,36 @@
 
 原生 Windows 桌面 GUI，PySide6 实现。37 项文件音频工具，统一青绿线性图标，支持片段预览与完整音频处理。无需浏览器或付费 API。
 
+## 下载与安装 · v1.1.0
+
+下载地址：[GitHub Releases](https://github.com/NaGeShuDai/AudioWorkbench/releases/tag/v1.1.0)。
+
+| 文件 | 使用方式 |
+|---|---|
+| `AudioWorkbench-1.1.0-Setup-x64.exe` | 安装版，双击按向导安装；无需管理员权限，默认安装到当前用户的 LocalAppData/Programs/AudioWorkbench，提供开始菜单入口、可选桌面快捷方式与卸载入口 |
+| `AudioWorkbench-v1.1.0-Windows-x64.zip` | 便携版，完整解压后运行文件夹中的 AudioWorkbench.exe |
+| `SHA256SUMS.txt` | 下载文件的 SHA-256 校验值 |
+
+安装版与便携版功能相同，均无需预装 Python。支持 Windows 10/11 x64。安装版升级可安装到原目录；卸载移除程序和快捷方式，保留按需下载的引擎与模型。若不再需要，可在退出并卸载后自行删除安装目录中的 `.engines`、`models` 和 `bin`。用户确认导出的文件不会被卸载程序删除。
+
+### 本次更新
+
+- 移除左侧的临时保存说明及底部默认“就绪”说明文字；处理进度、错误及取消提示继续正常显示。
+- 左侧拆分为“导入素材”和“功能”两个选项卡；切换不影响当前素材、参数、处理结果和播放。
+- 素材页提供导入、素材列表、排序和移除；功能页提供常用工具和完整功能面板。
+- 提供便携版及安装版，保留处理动画、上下双播放进度条和显式确认导出机制。
+
 ## Windows 便携版
 
-在 Releases 下载 `AudioWorkbench-v1.0.0-Windows-x64.zip`，完整解压到可写目录，双击 `AudioWorkbench.exe`。无需预装 Python。请保留同目录的 DLL、assets 和其他文件，不要只拷贝 EXE。
+在 Releases 下载 `AudioWorkbench-v1.1.0-Windows-x64.zip`，完整解压到可写目录，双击 `AudioWorkbench.exe`。无需预装 Python。请保留同目录的 DLL、assets 和其他文件，不要只拷贝 EXE。
 
 基础工具内置；AI 环境、Python 3.11 和模型在「引擎管理」按需下载，下载需要网络，可能占用数 GB。模型不包含在压缩包中。应用未进行商业代码签名。
 
 上方进度条对应原始 / 当前输入，下方对应处理结果，支持拖动与键盘定位，拖动保留播放或暂停状态。预览结果的下方时间从 0 开始，长度为所选片段。处理期间底部旋转指示器持续动画，取消或结束后停止。
 
-![工作区](docs/workspace.png)
+![功能选项卡](docs/workspace.png)
+
+![导入素材选项卡](docs/materials.png)
 
 ## 从源码启动
 
@@ -20,7 +41,7 @@
 
 ## 三栏操作
 
-- **左侧**：导入素材、拖动调整素材顺序、六个常用功能。点击「完整功能」打开 37 项图标工具面板，可按类别和关键词筛选。
+- **左侧**：「导入素材」页导入、选择、排序或移除音频；「功能」页选择常用工具，点击「完整功能」打开 37 项工具面板，可按类别和关键词筛选。
 - **中间**：当前素材、输入音轨选择、拖拽波形选区、片段 / 完整范围、原音与处理结果试听。分离工具显示音轨选择；转写显示可编辑表格；频谱与响度显示各自的分析视图。
 - **右侧**：仅显示当前工具的模型和参数，底部「确认导出」。
 
@@ -126,6 +147,8 @@ tests/                          信号、生命周期、导出及 GUI 检查
 uv pip install --python .venv/Scripts/python.exe pyinstaller==6.22.3 pillow
 .venv/Scripts/python.exe scripts/create_icon.py
 .venv/Scripts/python.exe scripts/build_windows.py
+# 安装 Inno Setup 6+，或设置 ISCC 环境变量后：
+.venv/Scripts/python.exe scripts/build_installer.py
 .venv/Scripts/python.exe tests/test_ui_updates.py
 .venv/Scripts/python.exe tests/gui_toolbox.py
 .venv/Scripts/python.exe -m unittest tests/test_toolbox.py

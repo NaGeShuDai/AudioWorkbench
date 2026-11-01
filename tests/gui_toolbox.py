@@ -73,7 +73,8 @@ with tempfile.TemporaryDirectory() as temp:
     output=ROOT/'docs'; output.mkdir(exist_ok=True); QTest.qWait(200)
     assert w.result_wave.mapToGlobal(QPoint(0,w.result_wave.height())).y() <= w.play.mapToGlobal(QPoint(0,0)).y(), 'waveform overlaps playback controls'
     assert w.wave.mapToGlobal(QPoint(0,w.wave.height())).y() <= w.range.mapToGlobal(QPoint(0,0)).y(), 'waveform overlaps range controls'
-    w.grab().save(str(output/'workspace.png'))
+    w.sidebar_tabs.setCurrentIndex(0); app.processEvents(); w.grab().save(str(output/'materials.png'))
+    w.sidebar_tabs.setCurrentIndex(1); app.processEvents(); w.grab().save(str(output/'workspace.png'))
     panel=FeaturePanel(w); panel.show(); app.processEvents(); panel.grab().save(str(output/'features.png'))
     panel.search.setText('去噪'); app.processEvents(); assert any(tile.isVisible() and tool.id=='denoise' for tool,tile in panel.tiles)
     assert all(not tile.isVisible() or '去噪' in tool.title+tool.description+tool.engine for tool,tile in panel.tiles)

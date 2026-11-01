@@ -6,7 +6,7 @@ from PySide6.QtGui import QPixmap,QDesktopServices,QPalette,QColor
 from PySide6.QtMultimedia import QAudioOutput,QMediaPlayer
 from PySide6.QtWidgets import (QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QListWidget,QListWidgetItem,
     QSplitter,QComboBox,QDoubleSpinBox,QCheckBox,QProgressBar,QFileDialog,QMessageBox,QScrollArea,
-    QStackedWidget,QPlainTextEdit,QTableWidget,QTableWidgetItem,QHeaderView,QAbstractItemView,QAbstractSpinBox,QApplication)
+    QStackedWidget,QPlainTextEdit,QTableWidget,QTableWidgetItem,QHeaderView,QAbstractItemView,QAbstractSpinBox,QApplication,QTabWidget)
 from .catalog import BY_ID,COMMON
 from .engine import Runner,Cancelled
 from .session import Session
@@ -47,17 +47,20 @@ class MainWindow(QMainWindow):
         self.models_btn=btn('引擎管理',lambda:ModelsDialog(self).exec(),'package'); header.addWidget(self.models_btn); outer.addLayout(header)
         self.splitter=QSplitter(Qt.Horizontal); self.splitter.setChildrenCollapsible(False); outer.addWidget(self.splitter,1)
         sidebar,sl=card('sidebar',15); sidebar.setMinimumWidth(200); sidebar.setMaximumWidth(250); self.splitter.addWidget(sidebar)
-        row=QHBoxLayout(); row.addWidget(label('素材','section')); row.addStretch(); self.add_btn=btn('',self.add_files,'plus'); self.add_btn.setToolTip('导入音频 / 视频'); row.addWidget(self.add_btn); sl.addLayout(row)
-        self.files=QListWidget(); self.files.setMinimumHeight(90); self.files.setMaximumHeight(160); self.files.setDragDropMode(QAbstractItemView.InternalMove)
-        self.files.currentItemChanged.connect(self.asset_changed); self.files.model().rowsMoved.connect(self.invalidate); sl.addWidget(self.files)
+        self.sidebar_tabs=QTabWidget(); self.sidebar_tabs.setDocumentMode(True); sl.addWidget(self.sidebar_tabs)
+        material_page=QWidget(); ml=QVBoxLayout(material_page); ml.setContentsMargins(0,14,0,0); ml.setSpacing(12)
+        self.sidebar_tabs.addTab(material_page,'导入素材')
+        self.add_btn=btn('导入音频 / 视频',self.add_files,'plus'); ml.addWidget(self.add_btn)
+        self.files=QListWidget(); self.files.setMinimumHeight(90); self.files.setDragDropMode(QAbstractItemView.InternalMove)
+        self.files.currentItemChanged.connect(self.asset_changed); self.files.model().rowsMoved.connect(self.invalidate); ml.addWidget(self.files,1)
         row=QHBoxLayout(); self.file_count=label('拖入素材即可开始','muted'); row.addWidget(self.file_count); row.addStretch()
-        self.remove_btn=btn('',self.remove_asset,'trash-2'); self.remove_btn.setToolTip('移除素材及临时结果'); row.addWidget(self.remove_btn); sl.addLayout(row)
-        sl.addSpacing(12); sl.addWidget(label('常用功能','section')); self.nav={}
+        self.remove_btn=btn('',self.remove_asset,'trash-2'); self.remove_btn.setToolTip('移除素材及临时结果'); row.addWidget(self.remove_btn); ml.addLayout(row)
+        function_page=QWidget(); fl=QVBoxLayout(function_page); fl.setContentsMargins(0,14,0,0); fl.setSpacing(12)
+        self.sidebar_tabs.addTab(function_page,'功能'); fl.addWidget(label('常用功能','section')); self.nav={}
         for key in COMMON:
-            tool=BY_ID[key]; b=btn(tool.title,lambda checked=False,k=key:self.choose_tool(k),tool.icon); b.setObjectName('nav'); b.setCheckable(True); self.nav[key]=b; sl.addWidget(b)
-        self.more_btn=btn('完整功能',self.show_features,'grid-2x2'); sl.addWidget(self.more_btn)
-        self.extra_nav=btn('',self.show_features); self.extra_nav.setObjectName('nav'); self.extra_nav.hide(); sl.addWidget(self.extra_nav)
-        sl.addStretch(); note=label('预览与中间结果仅临时保留\n确认导出后才保存文件','muted'); note.setWordWrap(True); sl.addWidget(note)
+            tool=BY_ID[key]; b=btn(tool.title,lambda checked=False,k=key:self.choose_tool(k),tool.icon); b.setObjectName('nav'); b.setCheckable(True); self.nav[key]=b; fl.addWidget(b)
+        self.more_btn=btn('完整功能',self.show_features,'grid-2x2'); fl.addWidget(self.more_btn)
+        self.extra_nav=btn('',self.show_features); self.extra_nav.setObjectName('nav'); self.extra_nav.hide(); fl.addWidget(self.extra_nav); fl.addStretch()
         center=QWidget(); cl=QVBoxLayout(center); cl.setContentsMargins(7,0,7,0); cl.setSpacing(12); self.splitter.addWidget(center)
         workspace,wl=card(margins=20); wl.setSpacing(8); cl.addWidget(workspace,1)
         heading=QHBoxLayout(); self.tool_title=label('','heading'); heading.addWidget(self.tool_title); heading.addStretch(); self.scope_badge=label('未导入素材','badge'); heading.addWidget(self.scope_badge); wl.addLayout(heading)
@@ -94,7 +97,7 @@ class MainWindow(QMainWindow):
         self.engine_label=label('','muted'); self.engine_label.setWordWrap(True); rl.addWidget(self.engine_label); self.param_scroll=QScrollArea(); self.param_scroll.setWidgetResizable(True); self.param_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff); rl.addWidget(self.param_scroll,1)
         self.result_state=label('暂无处理结果','muted'); self.result_state.setWordWrap(True); rl.addWidget(self.result_state); self.export_btn=btn('确认导出',self.export,'download',True); rl.addWidget(self.export_btn)
         self.open_btn=btn('打开导出位置',self.open_export,'folder-open'); self.open_btn.hide(); rl.addWidget(self.open_btn); self.splitter.setSizes([215,760,290])
-        footer=QHBoxLayout(); self.busy_indicator=BusyIndicator(); footer.addWidget(self.busy_indicator); self.status=label('就绪 · 本机处理，原文件保持不变','muted'); footer.addWidget(self.status,1); self.cancel_btn=btn('取消',self.cancel_task,'x'); self.cancel_btn.setEnabled(False); footer.addWidget(self.cancel_btn); outer.addLayout(footer)
+        footer=QHBoxLayout(); self.busy_indicator=BusyIndicator(); footer.addWidget(self.busy_indicator); self.status=label('','muted'); footer.addWidget(self.status,1); self.cancel_btn=btn('取消',self.cancel_task,'x'); self.cancel_btn.setEnabled(False); footer.addWidget(self.cancel_btn); outer.addLayout(footer)
         self.progress=QProgressBar(); self.progress.setRange(0,100); self.progress.setValue(0); outer.addWidget(self.progress); self.choose_tool('podcast'); self.refresh_buttons()
 
     @property

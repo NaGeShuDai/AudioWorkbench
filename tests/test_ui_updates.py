@@ -16,7 +16,15 @@ def until(fn):
     assert fn()
 with tempfile.TemporaryDirectory() as temp:
     p=Path(temp)/'tone.wav'; sf.write(p,np.sin(np.arange(48000*6)*2*np.pi*220/48000)*.1,48000)
+    assert w.sidebar_tabs.count()==2 and w.sidebar_tabs.tabText(0)=='导入素材'
+    assert w.status.text()=='' and w.add_btn.isVisible() and not w.more_btn.isVisible()
     w.add_paths([str(p)]); until(lambda:not w.busy)
+    asset_id=w.asset.id
+    w.sidebar_tabs.setCurrentIndex(1); app.processEvents()
+    assert w.more_btn.isVisible() and not w.files.isVisible() and w.asset.id==asset_id
+    w.sidebar_tabs.setCurrentIndex(0); app.processEvents()
+    assert w.files.count()==1 and w.asset.id==asset_id
+    w.sidebar_tabs.setCurrentIndex(1)
     panel=FeaturePanel(w)
     assert all(tile.parentWidget()==panel.container and not tile.isWindow() for _,tile in panel.tiles)
     for _ in range(3):
